@@ -369,12 +369,50 @@ class QuizGame:
             print("\n⚠️ 퀴즈 추가 중 파일 저장에 실패했습니다.")
 
     def list_quizzes(self) -> None:
-        """퀴즈 목록 조회 (Step 7에서 구현 예정)"""
-        print("\n📋 [퀴즈 목록] 기능은 Step 7에서 구현됩니다.")
+        """현재 등록된 모든 퀴즈 목록을 콘솔에 출력합니다."""
+        if not self.quizzes:
+            print("\n⚠️ 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요.")
+            return
+
+        print("\n" + "=" * 50)
+        print(f"📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
+        print("-" * 50)
+        for idx, quiz in enumerate(self.quizzes, start=1):
+            hint_badge = " [💡힌트]" if quiz.hint else ""
+            print(f"[{idx}] {quiz.question}{hint_badge}")
+        print("=" * 50)
 
     def delete_quiz(self) -> None:
-        """퀴즈 삭제 (Step 7에서 구현 예정)"""
-        print("\n🗑️ [퀴즈 삭제] 기능은 Step 7에서 구현됩니다.")
+        """사용자가 선택한 번호의 퀴즈를 목록 및 state.json에서 삭제합니다. (보너스 기능)"""
+        if not self.quizzes:
+            print("\n⚠️ 삭제할 퀴즈가 없습니다.")
+            return
+
+        self.list_quizzes()
+        print("\n🗑️ 삭제할 퀴즈의 번호를 입력하세요. (취소하려면 0을 입력)")
+        choice = self.prompt_int(
+            f"삭제할 번호 (1-{len(self.quizzes)}, 취소: 0): ",
+            min_val=0,
+            max_val=len(self.quizzes),
+        )
+
+        if choice == 0:
+            print("삭제 작업을 취소했습니다.")
+            return
+
+        target_quiz = self.quizzes[choice - 1]
+        print(f"\n선택한 문제: [{choice}] {target_quiz.question}")
+        confirm = self.prompt_text("정말 이 퀴즈를 삭제하시겠습니까? (y/n): ").lower()
+
+        if confirm in ("y", "yes"):
+            deleted = self.quizzes.pop(choice - 1)
+            if self.save_state():
+                print(f"\n✅ [{choice}]번 퀴즈 '{deleted.question}'가 성공적으로 삭제되었습니다.")
+                print(f"현재 남은 퀴즈: 총 {len(self.quizzes)}개")
+            else:
+                print("\n⚠️ 퀴즈 삭제 후 파일 저장에 실패했습니다.")
+        else:
+            print("삭제가 취소되었습니다.")
 
     def view_scores(self) -> None:
         """최고 점수 및 히스토리 조회 (Step 8에서 구현 예정)"""
