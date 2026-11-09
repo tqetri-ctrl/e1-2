@@ -1,0 +1,61 @@
+{
+  "best_score": 0,
+  "quizzes": [
+    {
+      "question": "파이썬에서 불변(immutable) 시퀀스 자료형은 무엇인가요?",
+      "choices": [
+        "list",
+        "tuple",
+        "set",
+        "dict"
+      ],
+      "answer": 2,
+      "hint": "소괄호 '()'로 정의하며 한 번 생성되면 요소를 수정하거나 삭제할 수 없습니다."
+    },
+    {
+      "question": "파이썬에서 리스트의 맨 끝에 새로운 요소를 추가하는 메서드는?",
+      "choices": [
+        "append()",
+        "push()",
+        "add()",
+        "insert()"
+      ],
+      "answer": 1,
+      "hint": "JavaScript의 push()와 유사하며 단일 항목을 끝에 덧붙입니다."
+    },
+    {
+      "question": "두 변수가 메모리 상에서 동일한 객체를 가리키고 있는지 비교하는 연산자는?",
+      "choices": [
+        "==",
+        "equals",
+        "is",
+        "match"
+      ],
+      "answer": 3,
+      "hint": "값(동등성) 비교가 아닌 고유 id(동일성)를 비교하는 키워드입니다."
+    },
+    {
+      "question": "다음 중 파이썬에서 참(True)으로 평가되는(Truthy) 값은?",
+      "choices": [
+        "0",
+        "[] (빈 리스트)",
+        "\"\" (빈 문자열)",
+        "[0] (원소가 0인 리스트)"
+      ],
+      "answer": 4,
+      "hint": "비어있지 않은 컨테이너 객체는 내부 원소 값과 무관하게 참으로 평가됩니다."
+    },
+    {
+      "question": "파이썬 함수에서 명시적인 return 문이 없을 때 기본으로 반환되는 객체는?",
+      "choices": [
+        "0",
+        "False",
+        "None",
+        "undefined"
+      ],
+      "answer": 3,
+      "hint": "파이썬에서 '값이 없음'을 나타내는 유일한 싱글톤 객체입니다."
+    }
+  ],
+  "history": []
+}
