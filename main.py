@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import random
 from datetime import datetime
 from pathlib import Path
@@ -164,18 +165,28 @@ class QuizGame:
             self.reset_to_default_state()
 
     def save_state(self) -> bool:
-        """현재 퀴즈 목록, 최고 점수 및 히스토리를 state.json에 UTF-8로 저장합니다."""
+        """현재 퀴즈 목록, 최고 점수 및 히스토리를 state.json에 UTF-8로 안전하게 저장합니다.
+
+        원자적 파일 쓰기(atomic write)를 적용하여 저장 중 강제 중단 시에도 파일 손상을 방지합니다.
+        """
         data = {
             "best_score": self.best_score,
             "quizzes": [q.to_dict() for q in self.quizzes],
             "history": self.history,
         }
+        temp_file = self.state_file.with_suffix(".tmp")
         try:
-            with open(self.state_file, "w", encoding="utf-8") as f:
+            with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
+            temp_file.replace(self.state_file)
             return True
         except OSError as e:
             print(f"⚠️ 데이터 파일 저장 중 오류가 발생했습니다: {e}")
+            if temp_file.exists():
+                try:
+                    temp_file.unlink()
+                except OSError:
+                    pass
             return False
 
     def reset_to_default_state(self) -> None:
@@ -204,6 +215,7 @@ class QuizGame:
         max_val: int | None = None,
     ) -> int:
         """사용자로부터 정수를 입력받아 범위 및 타입을 엄격하게 검증합니다."""
+        range_guide = f"{min_val}-{max_val}" if (min_val is not None and max_val is not None) else "정수"
         while True:
             raw_input = input(prompt_msg).strip()
             if not raw_input:
@@ -213,17 +225,11 @@ class QuizGame:
             try:
                 val = int(raw_input)
             except ValueError:
-                if min_val is not None and max_val is not None:
-                    print(f"⚠️ 잘못된 입력입니다. {min_val}-{max_val} 사이의 숫자를 입력하세요.")
-                else:
-                    print("⚠️ 유효한 숫자를 입력해주세요.")
+                print(f"⚠️ 잘못된 입력입니다. {range_guide} 사이의 숫자를 입력하세요.")
                 continue
 
-            if min_val is not None and val < min_val:
-                print(f"⚠️ 입력값은 {min_val} 이상이어야 합니다. ({min_val}-{max_val})")
-                continue
-            if max_val is not None and val > max_val:
-                print(f"⚠️ 입력값은 {max_val} 이하여야 합니다. ({min_val}-{max_val})")
+            if (min_val is not None and val < min_val) or (max_val is not None and val > max_val):
+                print(f"⚠️ 잘못된 입력입니다. {range_guide} 사이의 숫자를 입력하세요.")
                 continue
 
             return val
