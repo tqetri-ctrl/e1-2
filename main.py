@@ -415,8 +415,40 @@ class QuizGame:
             print("삭제가 취소되었습니다.")
 
     def view_scores(self) -> None:
-        """최고 점수 및 히스토리 조회 (Step 8에서 구현 예정)"""
-        print("\n🏆 [점수 확인] 기능은 Step 8에서 구현됩니다.")
+        """역대 최고 점수와 게임 플레이 히스토리 통계를 출력합니다. (보너스 기능 포함)"""
+        print("\n" + "=" * 60)
+        print("          🏆 점수 및 게임 플레이 기록          ")
+        print("=" * 60)
+
+        if not self.history and self.best_score == 0:
+            print("⚠️ 아직 퀴즈를 플레이한 기록이 없습니다.")
+            print("💡 메뉴에서 '1. 퀴즈 풀기'를 선택하여 게임을 즐겨보세요!")
+            print("=" * 60)
+            return
+
+        print(f"🥇 역대 최고 점수: {self.best_score}점")
+
+        if self.history:
+            print(f"\n📜 게임 플레이 히스토리 (총 {len(self.history)}회 기록)")
+            print("-" * 60)
+            print(f"{'회차':<4} | {'일시':<19} | {'문제수':<4} | {'정답':<4} | {'힌트':<4} | {'최종점수':<6}")
+            print("-" * 60)
+            for idx, record in enumerate(self.history, start=1):
+                timestamp = record.get("timestamp", "-")
+                total_q = record.get("total_questions", 0)
+                correct = record.get("correct_count", 0)
+                hints = record.get("hints_used", 0)
+                score = record.get("final_score", 0)
+                print(
+                    f"{idx:<4} | {timestamp:<19} | {total_q:<6} | {correct:<4} | {hints:<4} | {score}점"
+                )
+            print("-" * 60)
+
+            total_plays = len(self.history)
+            avg_score = sum(r.get("final_score", 0) for r in self.history) / total_plays
+            print(f"📊 통계: 총 {total_plays}회 플레이 | 평균 점수: {avg_score:.1f}점")
+
+        print("=" * 60)
 
     def run(self) -> None:
         """게임을 시작하고 사용자 입력을 처리하는 메인 이벤트 루프."""
