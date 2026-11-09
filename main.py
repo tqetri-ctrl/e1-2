@@ -123,12 +123,38 @@ class QuizGame:
         self.history: list[dict[str, Any]] = []
 
     # -------------------------------------------------------------------------
-    # 영속성 (state.json) 관리 메서드
+    # 영속성 (state.json) 관리 및 스키마 검증 메서드
     # -------------------------------------------------------------------------
+    @staticmethod
+    def _validate_schema(data: Any) -> None:
+        """JSON 데이터의 기본 스키마 및 자료형 유효성을 엄격하게 검증합니다."""
+        if not isinstance(data, dict):
+            raise ValueError("루트 데이터는 JSON 객체(dict)여야 합니다.")
+
+        if "quizzes" not in data or not isinstance(data["quizzes"], list):
+            raise ValueError("'quizzes' 필드는 리스트 형태여야 합니다.")
+
+        for idx, item in enumerate(data["quizzes"], start=1):
+            if not isinstance(item, dict):
+                raise ValueError(f"퀴즈 항목 #{idx}은 객체(dict) 형태여야 합니다.")
+            if "question" not in item or not isinstance(item["question"], str):
+                raise ValueError(f"퀴즈 항목 #{idx}의 'question' 필드가 누락되었거나 문자열이 아닙니다.")
+            if "choices" not in item or not isinstance(item["choices"], list) or len(item["choices"]) != 4:
+                raise ValueError(f"퀴즈 항목 #{idx}의 'choices' 필드는 4개의 선택지 리스트여야 합니다.")
+            if "answer" not in item or not (1 <= int(item.get("answer", 0)) <= 4):
+                raise ValueError(f"퀴즈 항목 #{idx}의 'answer' 필드는 1~4 정수여야 합니다.")
+
+        if "best_score" in data and not isinstance(data["best_score"], (int, float)):
+            raise ValueError("'best_score' 필드는 숫자형이어야 합니다.")
+
+        if "history" in data and not isinstance(data["history"], list):
+            raise ValueError("'history' 필드는 리스트 형태여야 합니다.")
+
     def load_state(self) -> None:
         """state.json 파일에서 퀴즈와 게임 기록을 불러옵니다.
 
-        파일이 없거나 손상되었을 경우 기본 퀴즈 데이터로 복구 및 초기화합니다.
+        파일이 없거나 손상되었을 경우 손상 파일 보존 백업(.corrupted.bak)을 생성한 뒤
+        기본 퀴즈 데이터로 복구 및 초기화합니다.
         """
         if not self.state_file.exists():
             print("📂 저장된 데이터 파일이 없습니다. 기본 퀴즈 데이터를 로드합니다.")
@@ -139,6 +165,9 @@ class QuizGame:
         try:
             with open(self.state_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
+
+            # 스키마 구조 검증
+            self._validate_schema(data)
 
             raw_quizzes = data.get("quizzes", [])
             loaded_quizzes = [Quiz.from_dict(q) for q in raw_quizzes]
@@ -157,7 +186,15 @@ class QuizGame:
 
         except (json.JSONDecodeError, UnicodeDecodeError, ValueError, KeyError) as e:
             print(f"⚠️ 데이터 파일이 손상되었거나 형식이 올바르지 않습니다: {e}")
-            print("🔄 기본 퀴즈 데이터로 복구합니다.")
+            backup_path = self.state_file.with_name("state.json.corrupted.bak")
+            try:
+                if self.state_file.exists():
+                    self.state_file.replace(backup_path)
+                    print(f"📦 기존 손상 파일은 분석용으로 백업되었습니다: {backup_path.name}")
+            except OSError as backup_err:
+                print(f"⚠️ 손상 파일 백업 실패: {backup_err}")
+
+            print("🔄 기본 퀴즈 데이터로 복구(초기화)합니다.")
             self.reset_to_default_state()
             self.save_state()
         except OSError as e:
@@ -238,17 +275,17 @@ class QuizGame:
     # 메뉴 UI 및 메인 루프
     # -------------------------------------------------------------------------
     def display_menu(self) -> None:
-        """메인 메뉴 화면을 콘솔에 출력합니다."""
-        print("\n" + "=" * 40)
-        print("        🎯 나만의 퀴즈 게임 🎯        ")
-        print("=" * 40)
-        print("  1. 퀴즈 풀기")
-        print("  2. 퀴즈 추가")
-        print("  3. 퀴즈 목록")
-        print("  4. 퀴즈 삭제 (보너스)")
-        print("  5. 점수 및 기록 확인 (보너스)")
-        print("  6. 종료")
-        print("=" * 40)
+        """메인 메뉴 화면과 각 항목의 기능을 콘솔에 출력합니다."""
+        print("\n" + "=" * 50)
+        print("            🎯 나만의 퀴즈 게임 🎯            ")
+        print("=" * 50)
+        print("  1. 퀴즈 풀기       - 저장된 퀴즈 출제 및 채점 (랜덤/문항수/힌트)")
+        print("  2. 퀴즈 추가       - 신규 퀴즈 및 보기, 힌트 등록")
+        print("  3. 퀴즈 목록       - 등록된 전체 퀴즈 목록 조회")
+        print("  4. 퀴즈 삭제       - 불필요한 퀴즈 안전 삭제 (보너스)")
+        print("  5. 점수 및 기록    - 역대 최고 점수 및 회차별 히스토리 통계")
+        print("  6. 종료            - 변경사항 저장 후 프로그램 종료")
+        print("=" * 50)
 
     def play_quiz(self) -> None:
         """저장된 퀴즈를 출제하고 채점 및 결과를 표시합니다.
