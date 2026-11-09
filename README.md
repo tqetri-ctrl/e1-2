@@ -210,3 +210,5 @@ e1-2/
 ## 🌿 9. Git 브랜치 전략 및 이력
 
 본 프로젝트는 미션 요구사항을 준수하여 **기능 브랜치(`feature/quiz-play`) 분기 및 머지(`git merge --no-ff`)**, 10회 이상의 의미 있는 단위 커밋, 그리고 7종 명령어(`init`, `add`, `commit`, `push`, `checkout`, `merge`, `clone`, `pull`) 실습을 완료했습니다.
+
+> 💡 **Git 실습 완료**: 원격 저장소 clone & pull 실습을 거쳐 분산 환경에서의 변경사항 동기화가 성공적으로 검증되었습니다.
