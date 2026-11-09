@@ -90,3 +90,4 @@ if __name__ == "__main__":
     assert restored_quiz.answer == sample_quiz.answer
     assert restored_quiz.hint == sample_quiz.hint
     print("✅ Quiz 클래스 단위 테스트 통과!")
+
