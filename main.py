@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import random
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -243,8 +245,96 @@ class QuizGame:
         print("=" * 40)
 
     def play_quiz(self) -> None:
-        """퀴즈 풀기 진행 (Step 5 브랜치에서 구현 예정)"""
-        print("\n📝 [퀴즈 풀기] 기능은 Step 5에서 구현됩니다.")
+        """저장된 퀴즈를 출제하고 채점 및 결과를 표시합니다.
+
+        보너스 기능 지원:
+        - 문제 수 선택 (1 ~ 전체 퀴즈 수)
+        - random 모듈을 통한 랜덤 출제
+        - 문항별 힌트 조회('H') 및 힌트 사용 시 점수 차감(50%)
+        - 게임 플레이 히스토리 기록
+        """
+        if not self.quizzes:
+            print("\n⚠️ 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요.")
+            return
+
+        total_available = len(self.quizzes)
+        print("\n" + "-" * 40)
+        print(f"📋 현재 등록된 퀴즈는 총 {total_available}개입니다.")
+        num_to_solve = self.prompt_int(
+            f"풀이할 문제 수를 선택하세요 (1 ~ {total_available}): ",
+            min_val=1,
+            max_val=total_available,
+        )
+
+        # 보너스 1: random 모듈을 활용한 랜덤 추출
+        selected_quizzes = random.sample(self.quizzes, num_to_solve)
+
+        print("\n" + "-" * 40)
+        print(f"📝 퀴즈를 시작합니다! (총 {num_to_solve}문제)")
+        print("💡 힌트를 보려면 정답 입력 시 'H'를 입력하세요 (힌트 사용 시 점수 50% 감점).")
+        print("-" * 40)
+
+        points_per_question = 100.0 / num_to_solve
+        total_earned_score = 0.0
+        correct_count = 0
+        total_hints_used = 0
+
+        for idx, quiz in enumerate(selected_quizzes, start=1):
+            quiz.display(index=idx)
+            hint_used = False
+
+            while True:
+                user_input = self.prompt_text("정답 입력 (1-4, 힌트보기: H): ").upper()
+                if user_input in ("H", "HINT", "0"):
+                    if not hint_used:
+                        print(quiz.get_hint())
+                        hint_used = True
+                        total_hints_used += 1
+                    else:
+                        print("⚠️ 이미 힌트를 확인한 문제입니다.")
+                    continue
+
+                if user_input in ("1", "2", "3", "4"):
+                    choice = int(user_input)
+                    break
+                else:
+                    print("⚠️ 잘못된 입력입니다. 1-4 사이의 번호 또는 힌트(H)를 입력하세요.")
+
+            if quiz.is_correct(choice):
+                if hint_used:
+                    earned = points_per_question * 0.5
+                    print(f"✅ 정답입니다! (힌트 사용으로 {earned:.1f}점 획득)")
+                else:
+                    earned = points_per_question
+                    print(f"✅ 정답입니다! ({earned:.1f}점 획득)")
+                total_earned_score += earned
+                correct_count += 1
+            else:
+                correct_answer_text = quiz.choices[quiz.answer - 1]
+                print(f"❌ 틀렸습니다. 정답은 {quiz.answer}번 ({correct_answer_text})입니다.")
+
+        # 최종 점수 계산 (반올림 정수)
+        final_score = int(round(total_earned_score))
+        print("\n" + "=" * 40)
+        print(f"🏆 결과: {num_to_solve}문제 중 {correct_count}문제 정답! ({final_score}점)")
+        if total_hints_used > 0:
+            print(f"💡 사용한 힌트 수: {total_hints_used}회")
+
+        if final_score > self.best_score:
+            print(f"🎉 새로운 최고 점수입니다! ({self.best_score}점 -> {final_score}점)")
+            self.best_score = final_score
+
+        # 보너스 5: 히스토리 기록
+        record = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "total_questions": num_to_solve,
+            "correct_count": correct_count,
+            "hints_used": total_hints_used,
+            "final_score": final_score,
+        }
+        self.history.append(record)
+        self.save_state()
+        print("=" * 40)
 
     def add_quiz(self) -> None:
         """신규 퀴즈 등록 (Step 6에서 구현 예정)"""

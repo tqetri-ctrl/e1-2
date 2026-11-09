@@ -1,5 +1,5 @@
 {
-  "best_score": 0,
+  "best_score": 100,
   "quizzes": [
     {
       "question": "파이썬에서 불변(immutable) 시퀀스 자료형은 무엇인가요?",
@@ -57,5 +57,13 @@
       "hint": "파이썬에서 '값이 없음'을 나타내는 유일한 싱글톤 객체입니다."
     }
   ],
-  "history": []
+  "history": [
+    {
+      "timestamp": "2026-11-09 13:57:37",
+      "total_questions": 2,
+      "correct_count": 0,
+      "hints_used": 1,
+      "final_score": 0
+    }
+  ]
 }
