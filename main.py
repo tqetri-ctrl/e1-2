@@ -337,8 +337,36 @@ class QuizGame:
         print("=" * 40)
 
     def add_quiz(self) -> None:
-        """신규 퀴즈 등록 (Step 6에서 구현 예정)"""
-        print("\n📌 [퀴즈 추가] 기능은 Step 6에서 구현됩니다.")
+        """새로운 퀴즈 정보를 사용자로부터 입력받아 목록 및 state.json에 등록합니다."""
+        print("\n" + "=" * 40)
+        print("📌 새로운 퀴즈를 추가합니다.")
+        print("=" * 40)
+
+        question = self.prompt_text("문제를 입력하세요: ")
+
+        choices: list[str] = []
+        for i in range(1, 5):
+            choice_text = self.prompt_text(f"선택지 {i}: ")
+            choices.append(choice_text)
+
+        answer = self.prompt_int("정답 번호 (1-4): ", min_val=1, max_val=4)
+        hint = self.prompt_text(
+            "힌트를 입력하세요 (선택 사항, 없으면 Enter): ",
+            allow_empty=True,
+        )
+
+        new_quiz = Quiz(
+            question=question,
+            choices=choices,
+            answer=answer,
+            hint=hint,
+        )
+
+        self.quizzes.append(new_quiz)
+        if self.save_state():
+            print(f"\n✅ 퀴즈가 성공적으로 추가되었습니다! (현재 등록된 퀴즈: 총 {len(self.quizzes)}개)")
+        else:
+            print("\n⚠️ 퀴즈 추가 중 파일 저장에 실패했습니다.")
 
     def list_quizzes(self) -> None:
         """퀴즈 목록 조회 (Step 7에서 구현 예정)"""
