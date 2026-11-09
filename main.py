@@ -243,8 +243,38 @@ class QuizGame:
         print("=" * 40)
 
     def play_quiz(self) -> None:
-        """퀴즈 풀기 진행 (Step 5 브랜치에서 구현 예정)"""
-        print("\n📝 [퀴즈 풀기] 기능은 Step 5에서 구현됩니다.")
+        """저장된 퀴즈를 출제하고 채점 및 결과를 표시합니다."""
+        if not self.quizzes:
+            print("\n⚠️ 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요.")
+            return
+
+        total_questions = len(self.quizzes)
+        print("\n" + "-" * 40)
+        print(f"📝 퀴즈를 시작합니다! (총 {total_questions}문제)")
+        print("-" * 40)
+
+        correct_count = 0
+        for idx, quiz in enumerate(self.quizzes, start=1):
+            quiz.display(index=idx)
+            user_choice = self.prompt_int("정답 입력 (1-4): ", min_val=1, max_val=4)
+
+            if quiz.is_correct(user_choice):
+                print("✅ 정답입니다!")
+                correct_count += 1
+            else:
+                correct_answer_text = quiz.choices[quiz.answer - 1]
+                print(f"❌ 틀렸습니다. 정답은 {quiz.answer}번 ({correct_answer_text})입니다.")
+
+        # 결과 계산 및 출력 (기본 100점 만점 환산)
+        final_score = int(round((correct_count / total_questions) * 100))
+        print("\n" + "=" * 40)
+        print(f"🏆 결과: {total_questions}문제 중 {correct_count}문제 정답! ({final_score}점)")
+
+        if final_score > self.best_score:
+            print("🎉 새로운 최고 점수입니다!")
+            self.best_score = final_score
+            self.save_state()
+        print("=" * 40)
 
     def add_quiz(self) -> None:
         """신규 퀴즈 등록 (Step 6에서 구현 예정)"""

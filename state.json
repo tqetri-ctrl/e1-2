@@ -1,5 +1,5 @@
 {
-  "best_score": 0,
+  "best_score": 100,
   "quizzes": [
     {
       "question": "파이썬에서 불변(immutable) 시퀀스 자료형은 무엇인가요?",
