@@ -138,7 +138,7 @@ e1-2/
         ├── menu.png             # 메뉴 및 예외 입력 처리 화면
         ├── play.png             # 퀴즈 풀기 (랜덤/문항수/힌트/결과) 화면
         ├── add_quiz.png         # 퀴즈 추가 화면
-        ├── list_and_delete.png  # 퀴즈 목록 및 삭제 화면
+        ├── delete_quiz.png      # 퀴즈 목록 및 삭제 화면
         ├── score_history.png    # 최고 점수 및 히스토리 통계 화면
         └── git_log.png          # git log --graph 결과 화면
 ```
@@ -195,15 +195,47 @@ e1-2/
 
 ---
 
-## 📸 8. 실행 화면 캡처 가이드 (제출용)
+## 📸 8. 실행 화면 스크린샷
 
-`docs/screenshots/` 디렉터리에 다음 시나리오의 스크린샷이 구비되어 있습니다:
-1. `docs/screenshots/menu.png`: 프로그램 시작 및 메뉴 화면, 잘못된 입력(문자열, 범위 외 숫자) 처리
-2. `docs/screenshots/play.png`: 문제 수 선택, 힌트 요청(H) 및 감점 안내, 정답/오답 및 최종 점수/신기록 화면
-3. `docs/screenshots/add_quiz.png`: 신규 퀴즈 입력 및 성공적 추가 화면
-4. `docs/screenshots/list_and_delete.png`: 등록 퀴즈 목록 출력 및 특정 퀴즈 선택 삭제 화면
-5. `docs/screenshots/score_history.png`: 최고 점수와 회차별 플레이 히스토리 및 통계 테이블 화면
-6. `docs/screenshots/git_log.png`: 브랜치 분기/병합 및 10개 이상의 커밋 로그 (`git log --oneline --graph`)
+### 8.1 메뉴 화면 및 예외 입력 처리
+> 메뉴 화면 렌더링, 공백 입력, 비숫자 입력(`abc`), 범위 밖 숫자(`9`)에 대한 방어적 안내 및 처리
+
+![메뉴 화면 및 예외 입력 처리](docs/screenshots/menu.png)
+
+---
+
+### 8.2 퀴즈 풀기 진행 및 채점 결과 (보너스 기능 통합)
+> 문항 수 선택(3문항), 랜덤 출제, 힌트 요청(`H`) 및 50% 감점, 즉시 정답/오답 피드백, 최종 점수 산출 및 신기록 갱신
+
+![퀴즈 풀기](docs/screenshots/play.png)
+
+---
+
+### 8.3 퀴즈 추가
+> 신규 질문, 4개 보기, 정답 번호(1~4), 힌트 입력 및 검증 후 `state.json` 즉시 동기화
+
+![퀴즈 추가](docs/screenshots/add_quiz.png)
+
+---
+
+### 8.4 퀴즈 목록 조회 및 삭제 (보너스 기능)
+> 전체 등록 퀴즈 목록 및 힌트 보유 여부 조회, 삭제 번호 선택 및 `y/n` 확인 절차를 거친 안전한 삭제
+
+![퀴즈 목록 및 삭제](docs/screenshots/delete_quiz.png)
+
+---
+
+### 8.5 점수 및 플레이 히스토리 기록 (보너스 기능)
+> 역대 최고 점수 표시, 게임 회차별 상세 플레이 히스토리 테이블(일시, 문제수, 정답, 힌트, 최종점수) 및 평균 점수 요약
+
+![점수 및 게임 플레이 기록](docs/screenshots/score_history.png)
+
+---
+
+### 8.6 Git 브랜치 병합 및 커밋 이력 (`git log --oneline --graph`)
+> `feature/quiz-play` 브랜치 분기/병합(`--no-ff`), 10회 이상의 단위 커밋, clone & pull 실습 이력 확인
+
+![Git 커밋 및 브랜치 로그 그래프](docs/screenshots/git_log.png)
 
 ---
 
